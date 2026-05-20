@@ -2,185 +2,127 @@
 
 Sistema multimodal para comprensión automática de papers científicos mediante técnicas de visión por computador, OCR, extracción estructural, modelos visión-lenguaje y modelos de lenguaje de gran escala.
 
-Repositorio oficial:  
-[comprension_automatica_documentos](https://github.com/jalvarado12/comprension_automatica_documentos)
-
 ---
 
-# Descripción del proyecto
+## Descripción del proyecto
 
 Este proyecto implementa un pipeline completo de **Document Understanding** orientado a documentos científicos en formato PDF.
 
 El sistema es capaz de:
 
-- Convertir PDFs científicos a imágenes
-- Aplicar preprocesamiento visual
-- Detectar regiones relevantes del documento
-- Extraer texto mediante OCR
-- Detectar y reconstruir tablas
-- Extraer figuras y gráficas
+- Convertir PDFs científicos a imágenes de alta resolución
+- Aplicar preprocesamiento visual por página
+- Detectar regiones relevantes del documento (texto, tablas, figuras)
+- Extraer texto mediante OCR con PaddleOCR
+- Detectar y reconstruir tablas en formato markdown usando Table Transformer (TATR)
+- Extraer figuras y gráficas por región
 - Generar captions contextuales usando Florence-2
-- Integrar información multimodal
-- Corregir errores OCR mediante Gemini
-- Generar resúmenes científicos automáticos
-- Evaluar el desempeño del sistema mediante métricas
-
-El objetivo final es transformar documentos científicos complejos en representaciones estructuradas y comprensibles automáticamente.
+- Integrar toda la información en un documento multimodal estructurado
+- Corregir errores OCR y generar resúmenes científicos automáticos mediante Gemini
+- Evaluar el desempeño del sistema mediante métricas (ROUGE, BERTScore, CER, WER)
 
 ---
 
-# Arquitectura general
+## Arquitectura general
 
-```text
+```
 PDF
 │
-├── Conversión PDF → imágenes
+├── Etapa 1 — Conversión PDF → imágenes
 │
-├── Preprocesamiento visual
+├── Etapa 2-3 — Layout Detection + TATR + Merge de regiones
 │
-├── Layout Detection
+├── Etapa 3 — OCR sobre bloques de texto (PaddleOCR)
 │
-├── OCR
+├── Etapa 4 — Extracción de tablas → Reconstrucción markdown (TATR)
 │
-├── Extracción de tablas
-│   └── Reconstrucción markdown
+├── Etapa 5 — Extracción de figuras → Captioning contextual (Florence-2)
 │
-├── Extracción de figuras
-│   └── Captioning contextual Florence-2
+├── Etapa 6 — Integración multimodal (documento JSON + markdown)
 │
-├── Integración multimodal
+├── Etapa 7 — Corrección contextual OCR + resumen científico (Gemini)
 │
-├── Corrección contextual con Gemini
-│
-└── Generación de resumen científico
+└── Etapa 8 — Evaluación automática (ROUGE, BERTScore, CER, WER)
 ```
 
 ---
 
-# Tecnologías utilizadas
+## Tecnologías utilizadas
 
-## Visión por computador
-
+### Visión por computador
 - OpenCV
 - PaddleOCR
-- EasyOCR
-- pdf2image
-- LayoutParser
+- pdf2image + Poppler
 
-## Modelos multimodales
+### Modelos multimodales
+- Florence-2 (captioning contextual de figuras)
+- Table Transformer — TATR (detección y reconstrucción de tablas)
 
-- Florence-2
-- Table Transformer (TATR)
+### Modelos de lenguaje
+- Gemini Flash (Google AI Studio) — corrección OCR y síntesis documental
 
-## Modelos de lenguaje
-
-- Gemini Flash (Google AI Studio)
-
-## Evaluación
-
+### Evaluación
 - ROUGE
 - BERTScore
-- CER
-- WER
+- CER (Character Error Rate)
+- WER (Word Error Rate)
 
 ---
 
-# Requisitos del sistema
+## Requisitos del sistema
 
-## Sistema operativo
-
-Recomendado:
-
+### Sistema operativo
 - Windows 10/11
 - Ubuntu Linux
 
----
-
-## Python
-
-Versión recomendada:
-
-```text
+### Python
+```
 Python 3.11
 ```
 
----
-
-## GPU (opcional pero recomendada)
-
-El pipeline puede ejecutarse en CPU, pero Florence-2 y OCR funcionan considerablemente mejor con GPU NVIDIA compatible con CUDA.
+### GPU (opcional pero recomendada)
+El pipeline puede ejecutarse en CPU, pero Florence-2 y PaddleOCR funcionan considerablemente mejor con GPU NVIDIA compatible con CUDA.
 
 ---
 
-# Instalación completa
+## Instalación
 
-# 1. Clonar el repositorio
+### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/jalvarado12/comprension_automatica_documentos.git
-```
-
-Entrar a la carpeta:
-
-```bash
 cd comprension_automatica_documentos
 ```
 
----
+### 2. Crear y activar entorno virtual
 
-# 2. Crear entorno virtual
-
-## Windows
-
+**Windows:**
 ```bash
 python -m venv venv
-```
-
-Activar entorno:
-
-```bash
 venv\Scripts\activate
 ```
 
----
-
-## Linux / Mac
-
+**Linux / Mac:**
 ```bash
 python3 -m venv venv
-```
-
-Activar entorno:
-
-```bash
 source venv/bin/activate
 ```
 
----
-
-# 3. Actualizar pip
+### 3. Actualizar pip
 
 ```bash
 python -m pip install --upgrade pip
 ```
 
----
-
-# 4. Instalar dependencias
+### 4. Instalar dependencias
 
 ```bash
 pip install -r requirements.txt
 ```
 
----
+Las versiones críticas utilizadas durante el desarrollo son:
 
-# Dependencias importantes
-
-El proyecto requiere versiones específicas compatibles entre OCR, OpenCV y transformers.
-
-Las versiones utilizadas durante el desarrollo fueron:
-
-```text
+```
 numpy==1.26.4
 opencv-python==4.6.0.66
 paddlepaddle==2.6.2
@@ -189,345 +131,190 @@ transformers==4.46.3
 einops==0.8.1
 ```
 
----
-
-# 5. Instalar Poppler (MUY IMPORTANTE)
-
-El proyecto utiliza `pdf2image`, por lo que necesitas instalar Poppler.
-
-## Windows
-
-Descargar:
-
-https://github.com/oschwartz10612/poppler-windows/releases
+> **Nota:** estas versiones deben respetarse. PaddleOCR, OpenCV y transformers tienen incompatibilidades conocidas con versiones más recientes.
 
 ---
 
-## Pasos
+## Instalación de Poppler (obligatorio)
 
-1. Descargar el ZIP
-2. Extraerlo
-3. Agregar la carpeta `bin` al PATH del sistema
+El proyecto usa `pdf2image`, que requiere Poppler instalado en el sistema.
 
-Ejemplo:
+### Windows
 
-```text
-C:\poppler\Library\bin
-```
+1. Descargar desde: https://github.com/oschwartz10612/poppler-windows/releases
+2. Extraer el ZIP
+3. Agregar la carpeta `bin` al PATH del sistema (ejemplo: `C:\poppler\Library\bin`)
+4. Reiniciar la terminal o VS Code
 
-4. Reiniciar VS Code o terminal
-
----
-
-## Verificar instalación
-
+**Verificar instalación:**
 ```bash
 pdftoppm -h
 ```
+Si aparece la ayuda de Poppler, la instalación fue exitosa.
 
-Si aparece ayuda de Poppler, quedó correctamente instalado.
+### Linux
 
----
-
-# Configuración de API
-
-El proyecto utiliza Google AI Studio para:
-
-- corrección contextual OCR
-- integración semántica
-- generación de resumen científico
-
----
-
-# Crear archivo `.env`
-
-Debes crear manualmente un archivo llamado:
-
-```text
-.env
-```
-
-en la raíz del proyecto.
-
----
-
-# Contenido del `.env`
-
-```env
-GOOGLE_API_KEY=TU_API_KEY_AQUI
+```bash
+sudo apt-get install poppler-utils
 ```
 
 ---
 
-# Obtener API Key
+## Configuración de API key
 
-Entrar a:
+El proyecto usa Google AI Studio (Gemini) para la corrección contextual OCR y la generación de resúmenes.
 
-https://aistudio.google.com/app/apikey
+### Crear archivo `.env`
 
-Crear una API Key y copiarla dentro del archivo `.env`.
+Crear un archivo llamado `.env` en la raíz del proyecto con el siguiente contenido:
+
+```
+GEMINI_API_KEY=TU_API_KEY_AQUI
+```
+
+> **Importante:** la variable debe llamarse exactamente `GEMINI_API_KEY`, que es el nombre que lee el código en `run_pipeline.py`.
+
+### Obtener API Key
+
+Ingresar a https://aistudio.google.com/app/apikey, crear una API Key y copiarla en el `.env`.
 
 ---
 
-# Estructura del proyecto
+## Estructura del proyecto
 
-```text
+```
 comprension_automatica_documentos/
-
 │
+├── app/                        # Servidor FastAPI (API REST del pipeline)
+├── configs/                    # Archivos de configuración YAML
 ├── data/
-│
-├── outputs/
-│
+│   ├── raw/                    # PDFs de entrada
+│   ├── ground_truth/           # Textos de referencia para evaluación
+│   └── outputs/                # Resultados organizados por run-name
 ├── src/
-│
-├── run_pipeline.py
-│
+│   ├── pdf/                    # Renderizado PDF
+│   ├── layout/                 # Detección de layout documental
+│   ├── ocr/                    # Motor OCR (PaddleOCR)
+│   ├── tables/                 # TATR: detección y reconstrucción de tablas
+│   ├── captioning/             # Florence-2: captioning de figuras
+│   ├── document/               # Construcción del documento multimodal
+│   ├── llm/                    # Cliente Gemini: corrección y resumen
+│   ├── evaluation/             # Métricas automáticas
+│   ├── io/                     # Lectura/escritura de manifests y figuras
+│   └── utils/                  # Utilidades (geometría, config, paths, etc.)
+├── tests/                      # Tests del proyecto
+├── .gitignore
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
-│
-├── .env
-│
-└── README.md
+└── run_pipeline.py             # Entrypoint del pipeline completo
 ```
 
 ---
 
-# Ejecución del pipeline
-
-El pipeline completo se ejecuta desde terminal.
-
----
-
-# Ejemplo de ejecución
+## Ejecución del pipeline
 
 ```bash
-python run_pipeline.py --pdf "C:\Users\user\Downloads\v60_n2_217_220.pdf" --run-name prueba2
+python run_pipeline.py --pdf "ruta/al/paper.pdf" --run-name nombre_ejecucion
 ```
 
----
+### Parámetros disponibles
 
-# Parámetros
+| Parámetro | Descripción |
+|---|---|
+| `--pdf` | Ruta al PDF científico de entrada (obligatorio) |
+| `--run-name` | Nombre de la ejecución; crea una carpeta en `data/outputs/` (obligatorio) |
+| `--config` | Ruta al archivo de configuración (por defecto: `configs/pipeline.yaml`) |
+| `--skip-ocr` | Omite las etapas 1–4 (PDF, layout, OCR, tablas) |
+| `--skip-florence` | Omite la etapa 5 (captioning de figuras) |
+| `--skip-llm` | Omite la etapa 7 (corrección y resumen con Gemini) |
+| `--skip-metrics` | Omite la etapa 8 (evaluación) |
+| `--only-metrics` | Ejecuta únicamente la etapa de evaluación |
 
-## `--pdf`
-
-Ruta completa del PDF científico.
-
-Ejemplo:
-
-```text
-"C:\Users\user\Downloads\paper.pdf"
-```
-
----
-
-## `--run-name`
-
-Nombre de la ejecución.
-
-Esto crea una carpeta independiente dentro de `data/outputs/`.
-
-Ejemplo:
-
-```text
-data/outputs/prueba2/
-```
-
----
-
-# Qué hace automáticamente el pipeline
-
-Cuando ejecutas:
+### Ejemplo completo
 
 ```bash
-python run_pipeline.py --pdf "ruta_pdf" --run-name nombre
+python run_pipeline.py --pdf "data/raw/paper.pdf" --run-name prueba1
 ```
 
-el sistema realiza:
-
-1. Conversión PDF → imágenes
-2. Preprocesamiento visual
-3. OCR
-4. Layout detection
-5. Extracción de figuras
-6. Extracción de tablas
-7. Reconstrucción markdown tabular
-8. Captioning contextual Florence-2
-9. Integración multimodal
-10. Corrección contextual con Gemini
-11. Generación de resumen técnico
-12. Evaluación automática
-
----
-
-# Dónde quedan los resultados
-
-Todos los resultados se guardan dentro de:
-
-```text
-data/outputs/
-```
-
----
-
-# Carpeta de ejecución
-
-Si usas:
+### Ejemplo sin LLM (sin consumir API)
 
 ```bash
---run-name prueba2
-```
-
-los resultados quedarán en:
-
-```text
-data/outputs/prueba2/
+python run_pipeline.py --pdf "data/raw/paper.pdf" --run-name prueba1 --skip-llm
 ```
 
 ---
 
-# Archivos MÁS IMPORTANTES
+## Outputs generados
 
-# 1. Documento corregido final
+Todos los resultados se guardan en `data/outputs/<run-name>/`:
 
-```text
-data/outputs/prueba2/40_llm/markdown/corrected_document.md
-```
-
-Contiene:
-
-- OCR corregido
-- integración multimodal
-- tablas integradas
-- captions contextualizados
-- documento estructurado
-
----
-
-# 2. Resumen científico final
-
-```text
-data/outputs/prueba2/40_llm/markdown/final_summary.md
-```
-
-Contiene:
-
-- objetivos
-- metodología
-- resultados
-- conclusiones
-
-generados automáticamente mediante Gemini.
+| Carpeta | Contenido |
+|---|---|
+| `01_page_images/` | Imágenes por página del PDF |
+| `02_preprocessed_pages/` | Páginas preprocesadas |
+| `06_figures/` | Figuras y gráficas extraídas |
+| `08_ocr_json/` | OCR estructurado en JSON por bloque |
+| `09_ocr_txt/` | Texto OCR plano por bloque |
+| `11_manifests/` | Detecciones en CSV y JSONL |
+| `12_image2text/` | Captions contextuales de Florence-2 |
+| `22_tables_markdown/` | Tablas reconstruidas en formato markdown |
+| `30_multimodal/` | Documento multimodal integrado (JSON + markdown) |
+| `40_llm/markdown/corrected_document.md` | Documento corregido final por Gemini |
+| `40_llm/markdown/final_summary.md` | Resumen científico automático |
+| `50_metrics/csv/metrics.csv` | Métricas de evaluación del pipeline |
 
 ---
 
-# 3. Métricas del sistema
+## Docker
 
-```text
-outputs/prueba2/50_metrics/csv/metrics.csv
-```
+El proyecto incluye un `Dockerfile` y `docker-compose.yml`. La imagen instala automáticamente Poppler, Tesseract y todas las dependencias Python.
 
-Incluye:
-
-- OCR metrics
-- reducción de ruido
-- preservation ratio
-- compression ratio
-- métricas de resumen
-
----
-
-# Otros outputs importantes
-
-## OCR raw
-
-```text
-data/outputs/prueba2/09_ocr_txt/ocr/
-```
-
----
-
-## Tablas reconstruidas
-
-```text
-data/outputs/prueba2/22_tables_markdown/
-```
-
----
-
-## Figuras extraídas
-
-```text
-data/outputs/prueba2/06_figures/
-```
-
----
-
-## Captions Florence-2
-
-```text
-data/outputs/prueba2/12_image2text/
-```
-
----
-
-# Problemas comunes
-
-# Error con Poppler
-
-Verificar:
+### Construir la imagen
 
 ```bash
-pdftoppm -h
+docker build -t comprension-docs .
 ```
 
-y confirmar que Poppler está agregado al PATH.
-
----
-
-# Error con PaddleOCR
-
-El proyecto requiere versiones compatibles específicas de Paddle y NumPy.
-
----
-
-# Error con Florence-2
-
-Instalar:
+### Ejecutar el pipeline con Docker
 
 ```bash
-pip install transformers==4.46.3
-pip install einops==0.8.1
+docker run --rm \
+  -v $(pwd)/data:/app/data \
+  --env-file .env \
+  comprension-docs \
+  python run_pipeline.py --pdf data/raw/paper.pdf --run-name prueba_docker
 ```
 
----
-
-# Error CUDA
-
-Si no tienes GPU compatible, el pipeline puede ejecutarse en CPU, aunque será considerablemente más lento.
+> Para usar GPU con Docker se requiere `nvidia-docker2` instalado en el host.
 
 ---
 
-# Estado actual del proyecto
+## Problemas comunes
 
-Actualmente el sistema ya implementa:
+### Error con Poppler
+```
+PDFPageCountError
+```
+Verificar que `pdftoppm -h` funciona en la terminal y que la carpeta `bin` de Poppler está en el PATH.
 
-- OCR multimodal
-- extracción estructural
-- reconstrucción tabular
-- captioning contextual
-- integración multimodal
-- corrección contextual con LLM
-- síntesis automática
+### Error con PaddleOCR / NumPy
+Respetar exactamente las versiones de `requirements.txt`. Conflictos frecuentes ocurren con `numpy > 1.26` y `paddlepaddle > 2.6.2`.
 
-Los siguientes pasos incluyen:
+### Error con Florence-2 / transformers
+```bash
+pip install transformers==4.46.3 einops==0.8.1
+```
 
-- evaluación formal completa
-- optimización del pipeline
-- transición definitiva a producción
+### GEMINI_API_KEY no definida
+Verificar que el archivo `.env` existe en la raíz del proyecto y que la variable se llama exactamente `GEMINI_API_KEY`.
+
+### Sin GPU (CPU only)
+El pipeline funciona en CPU pero Florence-2 y PaddleOCR serán considerablemente más lentos. Se puede omitir Florence-2 con `--skip-florence`.
 
 ---
 
-# Autor
+## Autor
 
 Sebastián Alvarado  
 Universidad del Rosario
