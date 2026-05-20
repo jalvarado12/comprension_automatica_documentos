@@ -1,0 +1,54 @@
+run:
+  name: "paper_run_001"
+  device: "cpu"
+
+pdf:
+  dpi: 220
+  poppler_path: null  # Windows: "C:/poppler/Library/bin"
+  use_preprocessing: true
+  clahe_clip_limit: 2.0
+  clahe_grid_size: [8, 8]
+
+layout:
+  model_name: "PicoDet_layout_1x"
+  threshold: 0.35
+
+tatr:
+  detection_model: "microsoft/table-transformer-detection"
+  structure_model: "microsoft/table-transformer-structure-recognition"
+  detection_threshold: 0.80
+  structure_threshold: 0.30
+  crop_padding: 40
+  upscale_factor: 4
+  tesseract_config: "--oem 3 --psm 6 -l spa+eng"
+
+merge:
+  iou_table_priority: 0.20
+  iou_drop_figure_threshold: 0.25
+
+ocr:
+  lang: "es"
+  use_angle_cls: true
+  min_score: 0.50
+  use_gpu: false
+
+florence:
+  model_name: "microsoft/Florence-2-base"
+  task_prompt: "<MORE_DETAILED_CAPTION>"
+
+captioning:
+  max_vertical_gap: 260
+  max_horizontal_expand: 140
+  max_nearby_blocks: 8
+  max_mention_blocks: 5
+
+llm:
+  model: "gemini-3.5-flash"
+  max_retries: 3
+  timeout: 60.0
+  max_chars_per_chunk: 50000
+  prompts_dir: "configs/prompts"
+
+evaluation:
+  lang: "en"
+  use_stemmer: true

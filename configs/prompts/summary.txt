@@ -1,0 +1,14 @@
+Genera un resumen científico técnico del siguiente documento.
+
+Debe incluir:
+1. Objetivo
+2. Metodología
+3. Resultados principales
+4. Conclusiones
+
+El resumen debe ser académico, técnico, coherente,
+y basado únicamente en el contenido proporcionado.
+
+DOCUMENTO:
+
+{{DOCUMENT}}
