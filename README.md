@@ -324,12 +324,12 @@ Ejemplo:
 
 Nombre de la ejecución.
 
-Esto crea una carpeta independiente dentro de `outputs/`.
+Esto crea una carpeta independiente dentro de `data/outputs/`.
 
 Ejemplo:
 
 ```text
-outputs/prueba2/
+data/outputs/prueba2/
 ```
 
 ---
@@ -364,7 +364,7 @@ el sistema realiza:
 Todos los resultados se guardan dentro de:
 
 ```text
-outputs/
+data/outputs/
 ```
 
 ---
@@ -380,7 +380,7 @@ Si usas:
 los resultados quedarán en:
 
 ```text
-outputs/prueba2/
+data/outputs/prueba2/
 ```
 
 ---
@@ -390,7 +390,7 @@ outputs/prueba2/
 # 1. Documento corregido final
 
 ```text
-outputs/prueba2/final_outputs/corrected_document.md
+data/outputs/prueba2/40_llm/markdown/corrected_document.md
 ```
 
 Contiene:
@@ -406,7 +406,7 @@ Contiene:
 # 2. Resumen científico final
 
 ```text
-outputs/prueba2/final_outputs/final_summary.md
+data/outputs/prueba2/40_llm/markdown/final_summary.md
 ```
 
 Contiene:
@@ -423,7 +423,7 @@ generados automáticamente mediante Gemini.
 # 3. Métricas del sistema
 
 ```text
-outputs/prueba2/evaluation/metrics.csv
+outputs/prueba2/50_metrics/csv/metrics.csv
 ```
 
 Incluye:
@@ -441,7 +441,7 @@ Incluye:
 ## OCR raw
 
 ```text
-outputs/prueba2/ocr/
+data/outputs/prueba2/09_ocr_txt/ocr/
 ```
 
 ---
@@ -449,7 +449,7 @@ outputs/prueba2/ocr/
 ## Tablas reconstruidas
 
 ```text
-outputs/prueba2/tables/
+data/outputs/prueba2/22_tables_markdown/
 ```
 
 ---
@@ -457,7 +457,7 @@ outputs/prueba2/tables/
 ## Figuras extraídas
 
 ```text
-outputs/prueba2/figures/
+data/outputs/prueba2/06_figures/
 ```
 
 ---
@@ -465,7 +465,7 @@ outputs/prueba2/figures/
 ## Captions Florence-2
 
 ```text
-outputs/prueba2/captions/
+data/outputs/prueba2/12_image2text/
 ```
 
 ---
